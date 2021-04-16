@@ -1,32 +1,40 @@
 import uuid
-from typing import Dict
-from flask import Flask, request, jsonify
+import requests as req
+from flask import Flask, request, jsonify, Response
 
 
 app = Flask("vulnerable server")
-
-sessions: Dict[str, str] = {}
 
 
 @app.route("/", methods=["GET"])
 def hello():
     session_id = request.cookies.get("session_id")
-    if session_id is not None and session_id in sessions:
-        app.logger.info(f"request with cookie {session_id[:10]}...")
-        name = sessions[session_id]
-    else:
-        name = "stranger"
-    return jsonify({"message": f"Hello {name}"}), 200
+    generic_message = jsonify({"message": f"Hello stranger"}), 200
+
+    if session_id is None:
+        return generic_message
+
+    app.logger.info(f"request with session id {session_id[:10]}...")
+    session_data = req.get(f"http://localhost:8888/session/{session_id}")
+    if session_data.status_code != 200:
+        return generic_message
+
+    user = session_data.json()["user"]
+    app.logger.info(f"request from user {user}")
+    return jsonify({"message": f"Hello {user}"}), 200
 
 
-@app.route("/<name>", methods=["PUT"])
+@app.route("/login/<name>", methods=["PUT"])
 def hello_name(name):
     session_id = request.cookies.get("session_id")
-    if session_id is None or session_id not in sessions:
-        session_id = uuid.uuid4().hex
-        app.logger.info(f"setting new cookie {session_id[:10]}...")
 
-    sessions[session_id] = name
+    if session_id is None:
+        session_id = uuid.uuid4().hex
+        app.logger.info(f"setting new session id {session_id[:10]}...")
+
+    if req.put(f"http://localhost:8888/session/{session_id}", json={"user": name}).status_code != 202:
+        return Response(status=500)
+
     response = jsonify({"message": f"{name} is now logged in!"})
     response.set_cookie(key="session_id", value=session_id)
     return response, 202

@@ -4,3 +4,6 @@ venv
 # JetBrains
 .idea
 *.iml
+
+# Client session data
+client
