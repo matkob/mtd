@@ -27,7 +27,7 @@ def hello():
 
 
 @app.route("/login/<name>", methods=["PUT"])
-def hello_name(name):
+def login(name):
     session_id = request.cookies.get("session_id")
 
     if session_id is None:
