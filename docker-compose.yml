@@ -13,8 +13,7 @@ services:
     environment:
       - NETWORK_NAME=mtd-private
       - REPLICAS=3
-      - APP_PORT=8080
-      - VIRTUALIZED=true
+      - ENVIRONMENT=docker
     networks:
       - mtd-private
 

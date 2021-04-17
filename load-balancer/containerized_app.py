@@ -12,23 +12,21 @@ class ContainerizedApp:
 
     @classmethod
     def create(cls, client: DockerClient):
-        running_virtualized = "VIRTUALIZED" in os.environ
-        hostname = f"mtd-app-{uuid.uuid4().hex}" if running_virtualized else "localhost"
-        port = int(os.environ.get("APP_PORT", 8080))
+        environment = os.environ.get("ENVIRONMENT", "local")
+        hostname = f"mtd-app-{uuid.uuid4().hex}" if environment == "docker" else "localhost"
         container = client.containers.run(image="spzc/python",
                                           name=hostname,
                                           volumes={f"mtd-webapp": {"bind": "/app", "mode": "ro"}},
                                           command=["python3", "app/serve.py"],
                                           detach=True,
-                                          environment={"PORT": port, "SESSION_MGR": "session-manager:8888"},
+                                          environment={"SESSION_MGR": "session-manager"},
                                           network=os.environ.get("NETWORK_NAME", "default"),
                                           hostname=hostname)
-        return ContainerizedApp(container, hostname, port)
+        return ContainerizedApp(container, hostname)
 
-    def __init__(self, container: Container, hostname: str, port: int):
+    def __init__(self, container: Container, hostname: str):
         self.container: Container = container
         self.hostname: str = hostname
-        self.port: int = port
         self.initialized: datetime.datetime = datetime.datetime.now()
         self.logger = logging.getLogger(container.name)
         self.logger.setLevel(logging.DEBUG)

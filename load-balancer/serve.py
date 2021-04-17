@@ -10,7 +10,7 @@ app = Flask("load balancer")
 @app.route("/<path:path>", methods=["GET", "PUT"])
 def route(path):
     container: ContainerizedApp = controller.random_app()
-    url = f"http://{container.hostname}:{container.port}/{path}"
+    url = f"http://{container.hostname}:8080/{path}"
     app.logger.info(f"routing to {url}")
     response = req.request(method=request.method, url=url, headers=request.headers, cookies=request.cookies)
     return response.json(), response.status_code
