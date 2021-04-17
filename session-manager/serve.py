@@ -21,4 +21,4 @@ def get_session(session_id):
     return sessions[session_id], 200 if session_id in sessions else Response(status=404)
 
 
-app.run(port=8888, debug=True)
+app.run(host="0.0.0.0", port=8888, debug=True)

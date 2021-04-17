@@ -1,9 +1,11 @@
+import os
 import uuid
 import requests as req
 from flask import Flask, request, jsonify, Response
 
 
 app = Flask("vulnerable server")
+session_manager_url = os.environ.get("SESSION_MGR", "localhost:8888")
 
 
 @app.route("/", methods=["GET"])
@@ -15,7 +17,7 @@ def hello():
         return generic_message
 
     app.logger.info(f"request with session id {session_id[:10]}...")
-    session_data = req.get(f"http://localhost:8888/session/{session_id}")
+    session_data = req.get(f"http://{session_manager_url}/session/{session_id}")
     if session_data.status_code != 200:
         return generic_message
 
@@ -32,7 +34,7 @@ def hello_name(name):
         session_id = uuid.uuid4().hex
         app.logger.info(f"setting new session id {session_id[:10]}...")
 
-    if req.put(f"http://localhost:8888/session/{session_id}", json={"user": name}).status_code != 202:
+    if req.put(f"http://{session_manager_url}/session/{session_id}", json={"user": name}).status_code != 202:
         return Response(status=500)
 
     response = jsonify({"message": f"{name} is now logged in!"})
@@ -40,4 +42,4 @@ def hello_name(name):
     return response, 202
 
 
-app.run(port=8080, debug=True)
+app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)

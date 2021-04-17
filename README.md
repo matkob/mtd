@@ -1,10 +1,18 @@
 # Moving Target Defence PoC
 
+## System
+
+System consists of three types of applications:
+
+1. Load Balancer (singleton)
+1. Session Manager (singleton)
+1. Web Application (replicated)
+
+![System Architecture](doc/system.png)
+
 ## Web Application
 
-### Testing sessions
-
-Create session storage:
+### Creating session storage
 
 ```bash
 touch session
@@ -23,7 +31,7 @@ curl -X PUT \
 #   202 - accepted
 ```
 
-Access personalized message:
+### Accessing personalized message
 
 ```bash
 curl -b session http://localhost:8080/
@@ -35,7 +43,7 @@ curl -b session http://localhost:8080/
 
 ## Session Manager
 
-Create new session:
+### Creating new session
 
 ```bash
 curl -X PUT \
@@ -48,7 +56,7 @@ curl -X PUT \
 #   400 - bad request
 ```
 
-Access session data:
+### Accessing session data
 
 ```bash
 curl http://localhost:8888/session/<session_id>
@@ -57,3 +65,12 @@ curl http://localhost:8888/session/<session_id>
 #   200 - OK
 #   404 - not found
 ```
+
+## Load Balancer
+
+Load balancer is invisible from the perspective of http client.
+It only allows for calling Web Application - there is no possibility to reach Session Manager through Load Balancer.
+
+## Development Setup
+
+In order to run the setup locally use either `docker-compose up` command or run all three applications separately.

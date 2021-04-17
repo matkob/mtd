@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  load-balancer:
+    container_name: mtd-load-balancer
+    image: spzc/python
+    volumes:
+      - ./load-balancer:/app
+      - /var/run/docker.sock:/var/run/docker.sock # needed for running docker commands
+    command: [ "python3", "app/serve.py" ]
+    ports:
+      - 5000:5000
+    environment:
+      - NETWORK_NAME=mtd-private
+      - REPLICAS=3
+      - APP_PORT=8080
+      - VIRTUALIZED=true
+    networks:
+      - mtd-private
+
+  session-manager:
+    container_name: mtd-session-manager
+    image: spzc/python
+    networks:
+      - mtd-private
+    volumes:
+      - ./session-manager:/app:ro
+    command: [ "python3", "app/serve.py" ]
+
+volumes:
+  webapp:
+    name: mtd-webapp
+    driver_opts:
+      type: none
+      device: ${PWD}/webapp
+      o: bind
+
+networks:
+  mtd-private:
+    name: mtd-private
+    driver: bridge
