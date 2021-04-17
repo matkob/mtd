@@ -18,7 +18,7 @@ System consists of three types of applications:
 touch session
 ```
 
-Log in:
+### Logging in
 
 ```bash
 curl -X PUT \
