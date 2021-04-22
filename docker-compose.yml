@@ -14,6 +14,8 @@ services:
       - NETWORK_NAME=mtd-private
       - REPLICAS=3
       - ENVIRONMENT=docker
+      - APP_TTL=25s
+      - APP_DECOMMISSION_PERIOD=5s
     networks:
       - mtd-private
 
