@@ -73,4 +73,4 @@ It only allows for calling Web Application - there is no possibility to reach Se
 
 ## Development Setup
 
-In order to run the setup locally use either `docker-compose up` command or run all three applications separately.
+In order to run the setup locally run `bash docker/build-img.sh` and `docker-compose up` or run all three applications separately.
