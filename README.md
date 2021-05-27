@@ -73,4 +73,23 @@ It only allows for calling Web Application - there is no possibility to reach Se
 
 ## Development Setup
 
-In order to run the setup locally run `bash docker/build-img.sh` and `docker-compose up` or run all three applications separately.
+In order to run the MTD setup locally run 
+
+```
+bash docker/build-img.sh
+docker-compose -f mtd-system.yml up --force-recreate
+```
+
+or run all three applications separately using `python <component>/serve.py`.
+
+To run a single Web Application with Session Manager, run
+
+```
+docker-compose -f bare-app.yml up --force-recreate
+```
+
+## Performance Testing
+
+Run one of the docker-compose configurations and then run `python client/main.py`.
+At this point performance test runner doesn't allow to configure any of the parameters via program arguments.
+To change the defaults, edit the `client/perftest.py` file.

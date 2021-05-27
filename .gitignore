@@ -6,4 +6,4 @@ venv
 *.iml
 
 # Client session data
-client
+client/session

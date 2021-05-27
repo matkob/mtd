@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  webapp:
+    container_name: bare-webapp
+    image: spzc/python
+    command: [ "python3", "app/serve.py" ]
+    ports:
+      - 5000:8080
+    volumes:
+      - ./webapp:/app:ro
+    environment:
+      - SESSION_MGR=session-manager
+    networks:
+      - mtd-private
+
+  session-manager:
+    container_name: bare-session-manager
+    image: spzc/python
+    networks:
+      - mtd-private
+    volumes:
+      - ./session-manager:/app:ro
+    command: [ "python3", "app/serve.py" ]
+
+networks:
+  mtd-private:
+    name: mtd-private
+    driver: bridge
